@@ -36,3 +36,7 @@ ${JSON.stringify(response, null, "  ")}
 }
 
 await fetchAndRecord("https://api.freerouting.app/v1/system/status")
+
+await fetchAndRecord("https://api.freerouting.app/v1/system/environment")
+
+await fetchAndRecord("https://api.freerouting.app/v1/system/logs")
