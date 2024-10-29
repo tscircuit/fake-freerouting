@@ -2,6 +2,9 @@
  * The purpose of this script is to ping the production freerouting api and
  * record the responses so that we know how to design the fake. The result of
  * this script outputs into scripts/prod-request-recordings/{endpoint}.md
+ *
+ * You can run this file by running `bun run record-prod` in the root of the
+ * project, or just by running `bun scripts/record-prod-requests.ts`
  */
 import { writeFileSync } from "node:fs"
 import * as Path from "node:path"
@@ -39,4 +42,6 @@ await fetchAndRecord("https://api.freerouting.app/v1/system/status")
 
 await fetchAndRecord("https://api.freerouting.app/v1/system/environment")
 
-await fetchAndRecord("https://api.freerouting.app/v1/system/logs")
+const exampleDsn = await fetch(
+  "https://raw.githubusercontent.com/freerouting/freerouting/refs/heads/master/tests/Issue143-rpi_splitter.dsn",
+).then((r) => r.text())
