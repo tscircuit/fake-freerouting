@@ -1,4 +1,4 @@
-## https://api.freerouting.app/v1/system/status
+## /v1/system/status
 
 ### GET Request
 
@@ -11,7 +11,7 @@
 ```json
 {
   "status": "OK",
-  "cpu_load": 57.15563506261181,
+  "cpu_load": 13.587604290822409,
   "ram_used": 17,
   "ram_available": 7,
   "storage_available": 0,
