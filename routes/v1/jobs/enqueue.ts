@@ -40,7 +40,7 @@ export default withRouteSpec({
     priority,
     stage: "IDLE",
     router_settings: routerSettingsSchema.parse({}),
-  }
+  } as const
 
   ctx.db.jobs.push(job)
 
@@ -49,9 +49,9 @@ export default withRouteSpec({
     created_at: job.created_at,
     session_id: job.session_id,
     name: job.name,
-    state: job.state,
+    state: job.state as "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED",
     priority: job.priority,
-    stage: job.stage,
+    stage: job.stage as "IDLE" | "ROUTING",
     router_settings: job.router_settings,
   })
 })
