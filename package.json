@@ -1,6 +1,6 @@
 {
-  "name": "debug-api",
-  "module": "index.ts",
+  "name": "@tscircuit/fake-freerouting",
+  "main": "index.js",
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
