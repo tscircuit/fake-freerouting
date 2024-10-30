@@ -1,7 +1,7 @@
 import { getTestServer } from "tests/fixtures/get-test-server"
 import { test, expect } from "bun:test"
 
-test("create a session", async () => {
+test("POST /v1/sessions/create", async () => {
   const { axios } = await getTestServer()
 
   const headers = {
@@ -9,7 +9,7 @@ test("create a session", async () => {
     "Freerouting-Environment-Host": "test-host",
   }
 
-  const { data } = await axios.post("/sessions/create", {}, { headers })
+  const { data } = await axios.post("/v1/sessions/create", {}, { headers })
 
   expect(data).toMatchObject({
     id: expect.any(String),
