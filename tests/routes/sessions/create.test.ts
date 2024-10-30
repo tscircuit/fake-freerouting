@@ -6,7 +6,7 @@ test("create a session", async () => {
 
   const headers = {
     "Freerouting-Profile-ID": "test-user-id",
-    "Freerouting-Environment-Host": "test-host"
+    "Freerouting-Environment-Host": "test-host",
   }
 
   const { data } = await axios.post("/sessions/create", {}, { headers })
@@ -14,6 +14,6 @@ test("create a session", async () => {
   expect(data).toMatchObject({
     id: expect.any(String),
     user_id: "test-user-id",
-    host: "test-host"
+    host: "test-host",
   })
 })
