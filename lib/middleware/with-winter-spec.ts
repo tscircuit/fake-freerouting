@@ -5,6 +5,8 @@ export const withRouteSpec = createWithWinterSpec({
   apiName: "tscircuit Debug API",
   productionServerUrl: "https://debug-api.tscircuit.com",
   beforeAuthMiddleware: [],
-  authMiddleware: {},
+  authMiddleware: {
+    session: withSessionAuth,
+  },
   afterAuthMiddleware: [withDb],
 })
