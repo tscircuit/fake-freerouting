@@ -37,6 +37,7 @@ export default withRouteSpec({
   // For now, return a mock SES file output
   const output = {
     job_id: job.job_id,
+    // TODO convert a spectra DSN file
     data: Buffer.from("(session test)").toString("base64"),
     size: 14, // Length of "(session test)"
     crc32: 0, // TODO: Implement actual CRC32
