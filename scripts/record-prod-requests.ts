@@ -56,25 +56,28 @@ const exampleDsn = await fetch(
   "https://raw.githubusercontent.com/freerouting/freerouting/refs/heads/master/tests/Issue143-rpi_splitter.dsn",
 ).then((r) => r.text())
 
-// Sessions endpoints
-// const sessionResponse = await fetchAndRecord(
-//   "https://api.freerouting.app/v1/sessions/create",
-//   {
-//     method: "POST",
-//     // body: JSON.stringify({}),
-//     body: "",
-//     headers: {
-//       // "Freerouting-Environment-Host": "test",
-//       // "Content-Type": "application/json",
-//       // "Freerouting-Profile-ID": "123e4567-e89b-12d3-a456-426614174000",
-//       "Freerouting-Profile-Email": "test@example.com",
-//     },
-//   },
-// )
-const sessionId = "" // sessionResponse.id
+const authHeaders = {
+  "Freerouting-Profile-ID": "d3586263-7ba3-43b3-b3af-bc2ebfd9d9a9",
+  "Freerouting-Environment-Host": "tscircuit/0.0.1",
+}
 
-// await fetchAndRecord("https://api.freerouting.app/v1/sessions/list")
-// await fetchAndRecord(`https://api.freerouting.app/v1/sessions/${sessionId}`)
+// Sessions endpoints
+const sessionResponse = await fetchAndRecord(
+  "https://api.freerouting.app/v1/sessions/create",
+  {
+    method: "POST",
+    body: "",
+    headers: authHeaders,
+  },
+)
+const sessionId = sessionResponse.id
+
+await fetchAndRecord("https://api.freerouting.app/v1/sessions/list", {
+  headers: authHeaders,
+})
+await fetchAndRecord(`https://api.freerouting.app/v1/sessions/${sessionId}`, {
+  headers: authHeaders,
+})
 // await fetchAndRecord(
 //   `https://api.freerouting.app/v1/sessions/${sessionId}/logs/0`,
 // )
@@ -86,6 +89,7 @@ const jobResponse = await fetchAndRecord(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...authHeaders,
     },
     body: JSON.stringify({
       session_id: sessionId,
@@ -96,12 +100,15 @@ const jobResponse = await fetchAndRecord(
 )
 const jobId = jobResponse.id
 
-await fetchAndRecord(`https://api.freerouting.app/v1/jobs/list/${sessionId}`)
+await fetchAndRecord(`https://api.freerouting.app/v1/jobs/list/${sessionId}`, {
+  headers: authHeaders,
+})
 
 await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/settings`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
+    ...authHeaders,
   },
   body: JSON.stringify({
     max_passes: 5,
@@ -113,6 +120,7 @@ await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/input`, {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
+    ...authHeaders,
   },
   body: JSON.stringify({
     filename: "test.dsn",
@@ -122,8 +130,19 @@ await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/input`, {
 
 await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/start`, {
   method: "PUT",
+  headers: authHeaders,
 })
 
-await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/logs/0`)
-await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}`)
-await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/output`)
+// await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/logs/0`, {
+//   headers: authHeaders,
+// })
+await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}`, {
+  headers: authHeaders,
+})
+
+console.log("Waiting 10 seconds for job to finish...")
+await new Promise((resolve) => setTimeout(resolve, 10_000))
+
+await fetchAndRecord(`https://api.freerouting.app/v1/jobs/${jobId}/output`, {
+  headers: authHeaders,
+})
