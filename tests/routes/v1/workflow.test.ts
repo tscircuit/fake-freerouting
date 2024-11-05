@@ -2,7 +2,7 @@ import { getTestServer } from "tests/fixtures/get-test-server"
 import { test, expect } from "bun:test"
 import fs from "fs"
 import path from "path"
-import axios from "axios"
+import defaultAxios from "redaxios"
 
 const USE_PROD_API = process.env.USE_PROD_API === "true"
 const PROD_API_URL = "https://api.freerouting.app"
@@ -11,7 +11,7 @@ test("Complete user workflow", async () => {
   let axiosInstance;
   
   if (USE_PROD_API) {
-    axiosInstance = axios.create({
+    axiosInstance = defaultAxios.create({
       baseURL: PROD_API_URL
     });
   } else {
