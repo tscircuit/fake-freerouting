@@ -2,10 +2,22 @@ import { getTestServer } from "tests/fixtures/get-test-server"
 import { test, expect } from "bun:test"
 import fs from "fs"
 import path from "path"
+import axios from "axios"
+
+const USE_PROD_API = process.env.USE_PROD_API === "true"
+const PROD_API_URL = "https://api.freerouting.app"
 
 test("Complete user workflow", async () => {
-  const { axios, url } = await getTestServer()
-  axios.defaults.baseURL = url
+  let axiosInstance;
+  
+  if (USE_PROD_API) {
+    axiosInstance = axios.create({
+      baseURL: PROD_API_URL
+    });
+  } else {
+    const { axios: testAxios } = await getTestServer()
+    axiosInstance = testAxios;
+  }
 
   const headers = {
     "Freerouting-Profile-ID": "test-user-id",
@@ -13,7 +25,7 @@ test("Complete user workflow", async () => {
   }
 
   // Step 1: Create a new session
-  const createSessionRes = await axios.post("/v1/sessions/create", {}, { headers })
+  const createSessionRes = await axiosInstance.post("/v1/sessions/create", {}, { headers })
   const sessionId = createSessionRes.data.id
   
   expect(createSessionRes.data).toMatchObject({
@@ -23,7 +35,7 @@ test("Complete user workflow", async () => {
   })
 
   // Step 2: Create a new job
-  const createJobRes = await axios.post(
+  const createJobRes = await axiosInstance.post(
     "/v1/jobs/enqueue",
     {
       session_id: sessionId,
@@ -51,7 +63,7 @@ test("Complete user workflow", async () => {
     "base64"
   )
 
-  const uploadRes = await axios.post(
+  const uploadRes = await axiosInstance.post(
     `/v1/jobs/${jobId}/input`,
     {
       filename: "example1.dsn",
@@ -94,7 +106,7 @@ test("Complete user workflow", async () => {
 //   })
 
   // Step 5: Get job output
-  const outputRes = await axios.get(`/v1/jobs/${jobId}/output`, { headers })
+  const outputRes = await axiosInstance.get(`/v1/jobs/${jobId}/output`, { headers })
 
   expect(outputRes.data).toMatchObject({
     job_id: jobId,
@@ -114,7 +126,7 @@ test("Complete user workflow", async () => {
   })
 
   // Step 6: Verify final job state
-  const finalJobRes = await axios.get(`/v1/jobs/${jobId}`, { headers })
+  const finalJobRes = await axiosInstance.get(`/v1/jobs/${jobId}`, { headers })
 
   expect(finalJobRes.data).toMatchObject({
     id: jobId,
