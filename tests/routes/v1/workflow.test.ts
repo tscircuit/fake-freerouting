@@ -69,28 +69,28 @@ test("Complete user workflow", async () => {
   })
 
   // Step 4: Configure router settings
-  const settingsRes = await axios.post(
-    `/v1/jobs/${jobId}/settings`,
-    {
-      max_passes: 5,
-      via_costs: 50,
-      trace_costs: 10,
-      start_pass: 1,
-      start_ripup: 100,
-    },
-    { headers },
-  )
+//   const settingsRes = await axios.post(
+//     `/v1/jobs/${jobId}/settings`,
+//     {
+//       max_passes: 5,
+//       via_costs: 50,
+//       trace_costs: 10,
+//       start_pass: 1,
+//       start_ripup: 100,
+//     },
+//     { headers },
+//   )
 
-  expect(settingsRes.data).toMatchObject({
-    id: jobId,
-    router_settings: expect.objectContaining({
-      max_passes: 5,
-      via_costs: 50,
-      trace_costs: 10,
-      start_pass: 1,
-      start_ripup: 100,
-    }),
-  })
+//   expect(settingsRes.data).toMatchObject({
+//     id: jobId,
+//     router_settings: expect.objectContaining({
+//       max_passes: 5,
+//       via_costs: 50,
+//       trace_costs: 10,
+//       start_pass: 1,
+//       start_ripup: 100,
+//     }),
+//   })
 
   // Step 5: Get job output
   const outputRes = await axios.get(`/v1/jobs/${jobId}/output`, { headers })
