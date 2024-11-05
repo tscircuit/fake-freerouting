@@ -4,7 +4,8 @@ import fs from "fs"
 import path from "path"
 
 test("Complete user workflow", async () => {
-  const { axios } = await getTestServer()
+  const { axios, url } = await getTestServer()
+  axios.defaults.baseURL = url
 
   const headers = {
     "Freerouting-Profile-ID": "test-user-id",
