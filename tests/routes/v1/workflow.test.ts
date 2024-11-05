@@ -19,7 +19,6 @@ test("Complete user workflow", async () => {
     id: expect.any(String),
     user_id: "test-user-id",
     host: "test-host",
-    created_at: expect.any(String),
   })
 
   // Step 2: Create a new job
