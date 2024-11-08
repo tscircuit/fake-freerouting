@@ -35,11 +35,27 @@ export default withRouteSpec({
         started_at: new Date().toISOString(),
       }
 
-      // TODO: Actual autorouting would happen here
-      // For now just simulate success
+      // Simulate successful autorouting with mock output
+      const mockOutput = {
+        size: 14, // Length of "(session test)"
+        crc32: 0,
+        format: "SES",
+        layer_count: 0,
+        component_count: 0,
+        netclass_count: 0,
+        net_count: 0,
+        track_count: 0,
+        trace_count: 0,
+        via_count: 0,
+        filename: `${job.name}.ses`,
+        path: "",
+        data: Buffer.from("(session test)").toString("base64")
+      }
+
       ctx.db.jobs[jobIndex] = {
         ...ctx.db.jobs[jobIndex],
         state: "COMPLETED",
+        output: mockOutput
       }
 
       processedCount++
