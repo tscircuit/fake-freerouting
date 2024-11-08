@@ -3,7 +3,7 @@ import { test, expect } from "bun:test"
 import circuitJson from "tests/assets/circuit.json"
 import { convertCircuitJsonToDsnJson, parseDsnToDsnJson, convertDsnJsonToCircuitJson, stringifyDsnJson } from "dsn-converter"
 
-test.skip("POST /_fake/run_autorouter", async () => {
+test("POST /_fake/run_autorouter", async () => {
   const { axios } = await getTestServer()
 
   const headers = {
@@ -44,7 +44,11 @@ test.skip("POST /_fake/run_autorouter", async () => {
   )
 
   // Run the autorouter
-  const { data } = await axios.post("/_fake/run_autorouter", {}, { headers })
+  const { data } = await axios.post("/_fake/run_autorouter", {
+    data: dsnBase64,
+  }, { headers })
+
+  console.log(data)
 
   // Verify response format
   expect(data).toMatchObject({
@@ -76,10 +80,25 @@ test.skip("POST /_fake/run_autorouter", async () => {
 
   // Verify the output circuit JSON has expected structure
   expect(outputCircuitJson).toMatchObject({
-    // Add specific circuit JSON validation here based on your needs
-    // This is just an example structure:
     components: expect.any(Array),
     nets: expect.any(Array),
     board: expect.any(Object)
   })
+
+  // Verify traces in the output
+  expect(outputRes.data.traces).toBeDefined()
+  expect(Array.isArray(outputRes.data.traces)).toBe(true)
+  
+  // Verify trace structure
+  if (outputRes.data.traces.length > 0) {
+    expect(outputRes.data.traces[0]).toMatchObject({
+      route: expect.arrayContaining([
+        expect.objectContaining({
+          route_type: expect.stringMatching(/^(wire|via)$/),
+          x: expect.any(Number),
+          y: expect.any(Number)
+        })
+      ])
+    })
+  }
 })

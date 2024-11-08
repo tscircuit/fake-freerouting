@@ -7,14 +7,20 @@
     "@biomejs/biome": "^1.9.4",
     "@types/bun": "latest",
     "@types/react": "18.3.4",
+    "circuit-json-to-connectivity-map": "^0.0.17",
+    "debug": "^4.3.6",
     "next": "^14.2.5",
+    "performance-now": "^2.1.0",
     "redaxios": "^0.5.1"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "dsn-converter": "^0.0.6",
+    "@tscircuit/infgrid-ijump-astar": "^0.0.24",
+    "@tscircuit/soup": "^0.0.73",
+    "@tscircuit/soup-util": "^0.0.38",
+    "dsn-converter": "^0.0.7",
     "transformation-matrix": "^2.16.1",
     "winterspec": "^0.0.86",
     "zod": "^3.23.8",
