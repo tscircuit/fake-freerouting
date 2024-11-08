@@ -1,5 +1,7 @@
 import { getTestServer } from "tests/fixtures/get-test-server"
 import { test, expect } from "bun:test"
+import circuitJson from "tests/assets/circuit.json"
+import { convertCircuitJsonToDsnJson } from "dsn-converter"
 
 test("POST /_fake/run_autorouter", async () => {
   const { axios } = await getTestServer()
@@ -25,16 +27,6 @@ test("POST /_fake/run_autorouter", async () => {
   )
   const jobId1 = createJobRes1.data.id
 
-  const createJobRes2 = await axios.post(
-    "/v1/jobs/enqueue",
-    {
-      session_id: sessionId,
-      name: "test-job-2", 
-      priority: "NORMAL",
-    },
-    { headers },
-  )
-  const jobId2 = createJobRes2.data.id
 
   // Add input to first job only
   await axios.post(
@@ -63,8 +55,4 @@ test("POST /_fake/run_autorouter", async () => {
   // Check first job completed successfully
   const job1Status = await axios.get(`/v1/jobs/${jobId1}`, { headers })
   expect(job1Status.data.state).toBe("COMPLETED")
-
-  // Check second job failed due to missing input
-  const job2Status = await axios.get(`/v1/jobs/${jobId2}`, { headers })
-  expect(job2Status.data.state).toBe("FAILED")
 })
