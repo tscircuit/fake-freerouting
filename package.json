@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "dsn-converter": "^0.0.6",
+    "transformation-matrix": "^2.16.1",
     "winterspec": "^0.0.86",
     "zod": "^3.23.8",
     "zustand": "^4.5.5",

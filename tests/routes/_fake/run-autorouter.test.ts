@@ -1,7 +1,7 @@
 import { getTestServer } from "tests/fixtures/get-test-server"
 import { test, expect } from "bun:test"
 import circuitJson from "tests/assets/circuit.json"
-import { convertCircuitJsonToDsnJson } from "dsn-converter"
+import { convertCircuitJsonToDsnJson, stringifyDsnJson } from "dsn-converter"
 
 test("POST /_fake/run_autorouter", async () => {
   const { axios } = await getTestServer()
@@ -28,12 +28,17 @@ test("POST /_fake/run_autorouter", async () => {
   const jobId1 = createJobRes1.data.id
 
 
-  // Add input to first job only
+  // Convert circuit JSON to DSN format and encode as base64
+  const dsnJson = convertCircuitJsonToDsnJson(circuitJson as any)
+  const dsnString = stringifyDsnJson(dsnJson)
+  const dsnBase64 = Buffer.from(dsnString).toString('base64')
+
+  // Add input to first job
   await axios.post(
     `/v1/jobs/${jobId1}/input`,
     {
       filename: "test.dsn",
-      data: "SGVsbG8gV29ybGQ=", // "Hello World" in base64
+      data: dsnBase64,
     },
     { headers },
   )
