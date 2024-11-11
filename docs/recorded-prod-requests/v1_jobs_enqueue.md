@@ -3,23 +3,29 @@
 ### POST Request
 
 ```json
-{"session_id":"1610a2a1-65dd-4a25-ab1d-a0ddfa8610aa","name":"test-job","priority":"NORMAL"}
+{"session_id":"f0993183-7df7-4490-b0c3-a69f242b1342","name":"test-job","priority":"NORMAL"}
 ```
 
 ### Response
 
 ```json
 {
-  "id": "06630d56-49af-43e4-b3c6-857e91594671",
-  "created_at": "2024-10-29T22:41:22.995128598Z",
-  "session_id": "1610a2a1-65dd-4a25-ab1d-a0ddfa8610aa",
+  "id": "de64107e-502d-4def-9786-6ba4174ed3a8",
+  "created_at": "2024-11-08T02:05:52.436319300Z",
+  "started_at": null,
+  "finished_at": null,
+  "input": null,
+  "snapshot": null,
+  "output": null,
+  "session_id": "f0993183-7df7-4490-b0c3-a69f242b1342",
   "name": "test-job",
   "state": "QUEUED",
   "priority": "NORMAL",
   "stage": "IDLE",
   "router_settings": {
     "default_preferred_direction_trace_cost": 1,
-    "default_undesired_direction_trace_cost": 1,
+    "default_undesired_direction_trace_cost": 2.5,
+    "job_timeout": "12:00:00",
     "max_passes": 100,
     "fanout_max_passes": 20,
     "max_threads": 1,

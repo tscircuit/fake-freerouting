@@ -18,6 +18,23 @@ export const routerSettingsSchema = z.object({
 })
 export type RouterSettings = z.infer<typeof routerSettingsSchema>
 
+export const jobOutputSchema = z.object({
+  size: z.number().default(0),
+  crc32: z.number().default(0),
+  format: z.string(),
+  layer_count: z.number().default(0),
+  component_count: z.number().default(0),
+  netclass_count: z.number().default(0),
+  net_count: z.number().default(0),
+  track_count: z.number().default(0),
+  trace_count: z.number().default(0),
+  via_count: z.number().default(0),
+  filename: z.string(),
+  path: z.string().default(""),
+  data: z.string()
+})
+export type JobOutput = z.infer<typeof jobOutputSchema>
+
 export const jobInputSchema = z.object({
   size: z.number().default(0),
   crc32: z.number().default(0),
@@ -47,6 +64,7 @@ export const jobSchema = z.object({
   created_at: z.string(),
   started_at: z.string().optional(),
   input: jobInputSchema.optional(),
+  output: jobOutputSchema.optional(),
   session_id: z.string(),
   name: z.string(),
   state: z.enum(["QUEUED", "RUNNING", "COMPLETED", "FAILED"]),

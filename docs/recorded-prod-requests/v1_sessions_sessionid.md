@@ -1,6 +1,6 @@
-## /v1/sessions/create
+## /v1/sessions/f0993183-7df7-4490-b0c3-a69f242b1342
 
-### POST Request
+### GET Request
 
 ```json
 
