@@ -1,167 +1,86 @@
-# dsn-converter
+# DSN Converter Documentation
 
-A TypeScript library for converting between DSN files and Circuit JSON format.
+The DSN converter is a tool for converting between Circuit JSON format and DSN (Design) files used in PCB design. This document explains the key components and their functionality.
 
-## Overview
+## Core Functionality
 
-dsn-converter is a powerful tool that enables bidirectional conversion between Specctr DSN format and Circuit JSON. This makes it possible to:
+The converter provides bidirectional conversion between:
+- Circuit JSON format (used by tscircuit)
+- DSN files (used by PCB design tools like KiCad and FreeRouting)
 
-- Parse Specctra DSN files into a workable JSON format
-- Convert Circuit JSON back into KiCad-compatible DSN files
-- Visualize PCB designs using SVG rendering
+## Key Components
 
-## Installation
+### Circuit JSON to DSN Conversion
 
-```bash
-# Using bun
-bun add dsn-converter
+The main conversion functions are:
 
-# Using npm
-npm install dsn-converter
+- `convertCircuitJsonToDsnString`: Converts Circuit JSON to DSN file format string
+- `convertCircuitJsonToDsnJson`: Converts Circuit JSON to intermediate DSN JSON format
+- `stringifyDsnJson`: Converts DSN JSON to DSN file format string
+
+### DSN to Circuit JSON Conversion
+
+For converting DSN files to Circuit JSON:
+
+- `parseDsnToCircuitJson`: Main entry point for converting DSN files to Circuit JSON
+- `parseDsnToDsnJson`: Parses DSN file into intermediate DSN JSON format
+- `convertDsnJsonToCircuitJson`: Converts DSN JSON to Circuit JSON
+
+### Component Processing
+
+Several specialized functions handle different PCB elements:
+
+- `processComponentsAndPads`: Processes components and their pads
+- `processPlatedHoles`: Handles plated holes in the PCB
+- `processNets`: Processes electrical connections between components
+- `processPcbTraces`: Converts PCB traces between formats
+
+### Utility Functions
+
+Helper functions for specific conversions:
+
+- `convertPadstacksToSmtPads`: Converts padstack definitions to SMT pads
+- `convertPolylinePathToPcbTraces`: Converts polyline paths to PCB traces
+- `convertWiringPathToPcbTraces`: Converts wiring paths to PCB traces
+- `getComponentValue`: Extracts component values (resistance, capacitance)
+- `getFootprintName`: Determines footprint names for components
+- `getPadstackName`: Generates padstack names for components
+
+## File Structure
+
+```
+lib/
+├── dsn-pcb/
+│   ├── circuit-json-to-dsn-json/    # Circuit JSON to DSN conversion
+│   └── dsn-json-to-circuit-json/    # DSN to Circuit JSON conversion
+└── utils/                           # Utility functions
 ```
 
-## Usage
-
-### Basic Usage
-
-#### Converting DSN to Circuit JSON
+## Usage Example
 
 ```typescript
-import { parseDsnToCircuitJson } from "dsn-converter"
+import { 
+  convertCircuitJsonToDsnString,
+  parseDsnToCircuitJson 
+} from 'dsn-converter'
 
-// Read DSN file
-const dsnContent = await Bun.file("your-design.dsn").text()
+// Convert Circuit JSON to DSN
+const dsnString = convertCircuitJsonToDsnString(circuitJson)
 
-// Convert to Circuit JSON
-const circuitJson = parseDsnToCircuitJson(dsnContent)
-
-// Save the output
-await Bun.write("output.circuit.json", JSON.stringify(circuitJson, null, 2))
+// Convert DSN to Circuit JSON
+const circuitJson = parseDsnToCircuitJson(dsnString)
 ```
 
-#### Converting Circuit JSON to DSN
+## Coordinate Systems
 
-```typescript
-import { circuitJsonToDsnString } from "dsn-converter"
+The converter handles coordinate system transformations:
+- Circuit JSON uses millimeters (mm)
+- DSN files use micrometers (μm)
+- Y-axis may be flipped between formats
 
-// Convert Circuit JSON to DSN format
-const dsnString = circuitJsonToDsnString(circuitJson)
+## Types
 
-// Save the DSN file
-await Bun.write("output.dsn", dsnString)
-```
-
-### Advanced Usage
-
-#### Working with DSN JSON Directly
-
-```typescript
-import {
-  parseDsnToDsnJson,
-  convertDsnJsonToCircuitJson,
-  stringifyDsnJson,
-} from "dsn-converter"
-
-// Parse DSN to intermediate JSON format
-const dsnJson = parseDsnToDsnJson(dsnString)
-
-// Modify the DSN JSON structure
-dsnJson.placement.components.push({
-  name: "NewComponent",
-  place: {
-    refdes: "U1",
-    x: 1000,
-    y: 1000,
-    side: "front",
-    rotation: 0,
-  },
-})
-
-// Convert to Circuit JSON
-const circuitJson = convertDsnJsonToCircuitJson(dsnJson)
-
-// Or convert back to DSN string
-const modifiedDsnString = stringifyDsnJson(dsnJson)
-```
-
-#### Custom Component Processing
-
-```typescript
-import { convertCircuitJsonToDsnJson } from "dsn-converter"
-
-// Create Circuit JSON elements
-const elements = [
-  {
-    type: "pcb_smtpad",
-    pcb_smtpad_id: "pad1",
-    pcb_component_id: "R1",
-    shape: "rect",
-    x: 0,
-    y: 0,
-    width: 0.5,
-    height: 0.6,
-    layer: "top",
-  },
-  // Add more elements...
-]
-
-// Convert to DSN format
-const dsnJson = convertCircuitJsonToDsnJson(elements)
-```
-
-## Features
-
-- **Complete DSN Support**: Handles all major DSN file components including:
-
-  - Component placement
-  - PCB layers
-  - Traces and wiring
-  - Padstacks and SMT pads
-  - Net definitions
-  - Board boundaries
-
-- **Accurate Conversions**: Maintains precise measurements and positions during conversion
-
-- **Type Safety**: Full TypeScript support with comprehensive type definitions
-
-## Data Structure
-
-### DSN Format
-
-The DSN format is represented as a structured JSON with the following main sections:
-
-- `parser`: Contains file metadata
-- `resolution`: Defines measurement units
-- `structure`: Describes board layers and rules
-- `placement`: Component positions
-- `library`: Component and padstack definitions
-- `network`: Net connections
-- `wiring`: Trace routing
-
-### Circuit JSON
-
-The Circuit JSON format includes:
-
-- PCB traces
-- SMT pads
-- Component definitions
-- Layer information
-- Routing data
-
-## Development
-
-```bash
-# Install dependencies
-bun install
-
-# Run tests
-bun test
-
-# Run specific test file
-bun test tests/dsn-pcb/parse-dsn-pcb.test.ts
-```
-
-## Acknowledgments
-
-- Built with [Bun](https://bun.sh)
-- Uses [tscircuit](https://github.com/tscircuit/tscircuit)
+Key types are defined in `types.ts`:
+- `DsnPcb`: Represents a PCB in DSN format
+- `DsnSession`: Represents a DSN session
+- `Component`, `Padstack`, `Net`: Various PCB elements

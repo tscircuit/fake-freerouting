@@ -1,7 +1,5 @@
 import { getTestServer } from "tests/fixtures/get-test-server"
 import { test, expect } from "bun:test"
-import circuitJson from "tests/assets/circuit.json"
-import { convertCircuitJsonToDsnJson, parseDsnToDsnJson, convertDsnJsonToCircuitJson, stringifyDsnJson } from "dsn-converter"
 
 test("POST /_fake/run_autorouter", async () => {
   const { axios } = await getTestServer()
@@ -15,90 +13,46 @@ test("POST /_fake/run_autorouter", async () => {
   const createSessionRes = await axios.post("/v1/sessions/create", {}, { headers })
   const sessionId = createSessionRes.data.id
 
-  // Create two jobs - one with input, one without
-  const createJobRes1 = await axios.post(
+  // Create a job
+  const createJobRes = await axios.post(
     "/v1/jobs/enqueue",
     {
       session_id: sessionId,
-      name: "test-job-1",
+      name: "test-job",
       priority: "NORMAL",
     },
     { headers },
   )
-  const jobId1 = createJobRes1.data.id
+  const jobId = createJobRes.data.id
 
+  // Add input to the job
+  const exampleDsn = await Bun.file("tests/assets/example1.dsn").text()
+  const encodedDsn = Buffer.from(exampleDsn).toString('base64')
 
-  // Convert circuit JSON to DSN format and encode as base64
-  const dsnJson = convertCircuitJsonToDsnJson(circuitJson as any)
-  const dsnString = stringifyDsnJson(dsnJson)
-  const dsnBase64 = Buffer.from(dsnString).toString('base64')
-
-  // Add input to first job
+  // Add input to job
   await axios.post(
-    `/v1/jobs/${jobId1}/input`,
+    `/v1/jobs/${jobId}/input`,
     {
       filename: "test.dsn",
-      data: dsnBase64,
+      data: encodedDsn,
     },
     { headers },
   )
 
   // Run the autorouter
-  const { data } = await axios.post("/_fake/run_autorouter", {
-    data: dsnBase64,
-  }, { headers })
+  const { data } = await axios.post("/_fake/run_autorouter", {}, { headers })
+  expect(data.processed_jobs).toBe(1)
 
-  console.log(data)
-
-  // Verify response format
-  expect(data).toMatchObject({
-    processed_jobs: expect.any(Number),
-    errors: expect.any(Array),
-  })
-
-  // If there are errors, verify their format
-  if (data.errors.length > 0) {
-    expect(data.errors[0]).toMatchObject({
-      job_id: expect.any(String),
-      error: expect.any(String),
-    })
-  }
-
-  // Get the output from the completed job
-  const outputRes = await axios.get(`/v1/jobs/${jobId1}/output`, { headers })
-  
-  // Decode the base64 output
-  const decodedOutput = Buffer.from(outputRes.data.data, 'base64').toString()
-  
-  // Convert back to DSN JSON and then to Circuit JSON
-  const outputDsnJson = parseDsnToDsnJson(decodedOutput)
-  const outputCircuitJson = convertDsnJsonToCircuitJson(outputDsnJson)
-
-  // Check job completed successfully
-  const job1Status = await axios.get(`/v1/jobs/${jobId1}`, { headers })
+  // Check first job completed successfully
+  const job1Status = await axios.get(`/v1/jobs/${jobId}`, { headers })
   expect(job1Status.data.state).toBe("COMPLETED")
-
-  // Verify the output circuit JSON has expected structure
-  expect(outputCircuitJson).toMatchObject({
-    components: expect.any(Array),
-    nets: expect.any(Array),
-    board: expect.any(Object)
-  })
-
-  // Verify traces in the output
-  expect(outputRes.data.traces).toBeDefined()
-  expect(Array.isArray(outputRes.data.traces)).toBe(true)
   
-  // Verify trace structure
-  if (outputRes.data.traces.length > 0) {
-    expect(outputRes.data.traces[0]).toMatchObject({
-      route: expect.arrayContaining([
-        expect.objectContaining({
-          route_type: expect.stringMatching(/^(wire|via)$/),
-          x: expect.any(Number),
-          y: expect.any(Number)
-        })
-      ])
-    })
-  }
+  // Get job output and verify routing
+  const output = await axios.get(`/v1/jobs/${jobId}/output`, { headers })
+  const decodedOutput = Buffer.from(output.data.data, 'base64').toString()
+  
+  // Verify output contains routing information
+  expect(decodedOutput).toContain("(wire")
+  expect(output.data.track_count).toBeGreaterThan(0)
+
 })

@@ -20,7 +20,7 @@
     "@tscircuit/infgrid-ijump-astar": "^0.0.24",
     "@tscircuit/soup": "^0.0.73",
     "@tscircuit/soup-util": "^0.0.38",
-    "dsn-converter": "^0.0.7",
+    "dsn-converter": "^0.0.14",
     "transformation-matrix": "^2.16.1",
     "winterspec": "^0.0.86",
     "zod": "^3.23.8",

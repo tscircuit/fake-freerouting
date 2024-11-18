@@ -9,7 +9,7 @@ import type { Middleware } from "winterspec"
 import { createDatabase } from "lib/db/db-client"
 
 export const startServer = async ({
-  port,
+  port = 1234,
   testDbName,
 }: { port: number; testDbName: string }) => {
   const winterspecBundle = await createWinterSpecBundleFromDir(
