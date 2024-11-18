@@ -7,6 +7,7 @@ import {
   type DsnSession,
 } from "dsn-converter"
 import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
+import { su } from "@tscircuit/soup-util"
 
 test("POST /_fake/run_autorouter", async () => {
   const { axios } = await getTestServer()

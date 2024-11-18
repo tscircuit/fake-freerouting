@@ -177,3 +177,7 @@ dist
 .vscode
 .winterspec
 .aider*
+
+yalc.lock
+.yalc
+*.diff.png
