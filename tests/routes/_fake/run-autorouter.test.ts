@@ -1,5 +1,12 @@
 import { getTestServer } from "tests/fixtures/get-test-server"
 import { test, expect } from "bun:test"
+import {
+  convertDsnSessionToCircuitJson,
+  parseDsnToDsnJson,
+  type DsnPcb,
+  type DsnSession,
+} from "dsn-converter"
+import { convertCircuitJsonToPcbSvg } from "circuit-to-svg"
 
 test("POST /_fake/run_autorouter", async () => {
   const { axios } = await getTestServer()
@@ -57,4 +64,14 @@ test("POST /_fake/run_autorouter", async () => {
   // Verify output contains routing information
   expect(decodedOutput).toContain("(wire")
   expect(output.data.track_count).toBeGreaterThan(0)
+
+  const dsnInput = parseDsnToDsnJson(exampleDsn) as DsnPcb
+  const circuitJson = convertDsnSessionToCircuitJson(
+    dsnInput,
+    parseDsnToDsnJson(decodedOutput) as DsnSession,
+  )
+
+  expect(convertCircuitJsonToPcbSvg(circuitJson)).toMatchSvgSnapshot(
+    import.meta.path,
+  )
 })

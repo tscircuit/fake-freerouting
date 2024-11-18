@@ -76,16 +76,22 @@ export default withRouteSpec({
         OBSTACLE_MARGIN: 0.2,
       })
       const traces = autorouter.solveAndMapToTraces() as PcbTrace[]
+
+      for (const trace of traces) {
+        // HACK: autorouter should be able to return the source trace id
+        trace.source_trace_id = trace.pcb_trace_id.split("pcb_trace_for_")[1]
+      }
       const routedCircuitJson = addPcbTracesToCircuitJson(circuitJson, traces)
 
-      console.dir(
-        {
-          simpleRouteJson,
-          source_traces: su(circuitJson).source_trace.list(),
-          pcb_traces: su(routedCircuitJson).pcb_trace.list(),
-        },
-        { depth: null },
-      )
+      // console.dir(
+      //   {
+      //     simpleRouteJson,
+      //     traces,
+      //     source_traces: su(circuitJson).source_trace.list(),
+      //     pcb_traces: su(routedCircuitJson).pcb_trace.list(),
+      //   },
+      //   { depth: null },
+      // )
 
       const routedDsnSession = convertCircuitJsonToDsnSession(
         dsnPcb,
