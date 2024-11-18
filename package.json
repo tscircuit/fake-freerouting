@@ -35,6 +35,8 @@
     "dev": "winterspec dev",
     "build": "winterspec bundle -o dist/bundle.js",
     "next:dev": "next dev",
-    "record-prod": "bun scripts/record-prod-requests.ts"
+    "record-prod": "bun scripts/record-prod-requests.ts",
+    "format": "biome format --write .",
+    "format:check": "biome format ."
   }
 }
