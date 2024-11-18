@@ -1,10 +1,24 @@
 import { withRouteSpec } from "lib/middleware/with-winter-spec"
 import { z } from "zod"
-import { parseDsnToCircuitJson, convertCircuitJsonToDsnString } from "dsn-converter"
+import {
+  parseDsnToCircuitJson,
+  convertCircuitJsonToDsnString,
+  convertCircuitJsonToDsnSession,
+  parseDsnToDsnJson,
+  type DsnPcb,
+  stringifyDsnSession,
+} from "dsn-converter"
 import type { AnyCircuitElement, PcbTrace } from "circuit-json"
-import { MultilayerIjump,getSimpleRouteJson } from "@tscircuit/infgrid-ijump-astar"
+import {
+  MultilayerIjump,
+  getSimpleRouteJson,
+} from "@tscircuit/infgrid-ijump-astar"
+import { su } from "@tscircuit/soup-util"
 
-function addPcbTracesToCircuitJson(circuitJson: AnyCircuitElement[], traces: PcbTrace[]): AnyCircuitElement[] {
+function addPcbTracesToCircuitJson(
+  circuitJson: AnyCircuitElement[],
+  traces: PcbTrace[],
+): AnyCircuitElement[] {
   return circuitJson.concat(traces)
 }
 
@@ -24,7 +38,9 @@ export default withRouteSpec({
   let processedCount = 0
 
   // Find jobs that need processing
-  const jobsToProcess = ctx.db.jobs.filter((job) => ["QUEUED"].includes(job.state))
+  const jobsToProcess = ctx.db.jobs.filter((job) =>
+    ["QUEUED"].includes(job.state),
+  )
 
   for (const job of jobsToProcess) {
     try {
@@ -50,17 +66,39 @@ export default withRouteSpec({
       }
 
       // Get the input DSN content and add fake routing
-      const inputDsn = Buffer.from(job.input._input_dsn!, 'base64').toString()
+      const inputDsn = Buffer.from(job.input._input_dsn!, "base64").toString()
+      const dsnPcb = parseDsnToDsnJson(inputDsn) as DsnPcb
       const circuitJson = parseDsnToCircuitJson(inputDsn)
       const simpleRouteJson = getSimpleRouteJson(circuitJson)
 
       const autorouter = new MultilayerIjump({
         input: simpleRouteJson,
-        OBSTACLE_MARGIN: 0.2
+        OBSTACLE_MARGIN: 0.2,
       })
       const traces = autorouter.solveAndMapToTraces() as PcbTrace[]
+
+      for (const trace of traces) {
+        // HACK: autorouter should be able to return the source trace id
+        trace.source_trace_id = trace.pcb_trace_id.split("pcb_trace_for_")[1]
+      }
       const routedCircuitJson = addPcbTracesToCircuitJson(circuitJson, traces)
-      const routedDsn = convertCircuitJsonToDsnString(routedCircuitJson)
+
+      // console.dir(
+      //   {
+      //     simpleRouteJson,
+      //     traces,
+      //     source_traces: su(circuitJson).source_trace.list(),
+      //     pcb_traces: su(routedCircuitJson).pcb_trace.list(),
+      //   },
+      //   { depth: null },
+      // )
+
+      const routedDsnSession = convertCircuitJsonToDsnSession(
+        dsnPcb,
+        routedCircuitJson,
+      )
+
+      const routedDsnString = stringifyDsnSession(routedDsnSession)
       // convert the DSN to a SES file
 
       ctx.db.jobs[jobIndex] = {
@@ -68,8 +106,8 @@ export default withRouteSpec({
         state: "COMPLETED",
         stage: "IDLE",
         output: {
-          data: Buffer.from(routedDsn).toString("base64"),
-          size: Buffer.from(routedDsn).length,
+          data: Buffer.from(routedDsnString).toString("base64"),
+          size: Buffer.from(routedDsnString).length,
           crc32: 0,
           format: "SES",
           layer_count: job.input?.layer_count ?? 2,

@@ -49,11 +49,11 @@ export default withRouteSpec({
   }
 
   // Calculate input metadata
-  const decodedData = Buffer.from(data, 'base64')
+  const decodedData = Buffer.from(data, "base64")
   const input = {
     size: decodedData.length,
     crc32: 0, // TODO: Implement CRC32 calculation
-    format: filename.split('.').pop()?.toUpperCase() || '',
+    format: filename.split(".").pop()?.toUpperCase() || "",
     layer_count: 0,
     component_count: 0,
     netclass_count: 0,
@@ -62,7 +62,7 @@ export default withRouteSpec({
     trace_count: 0,
     via_count: 0,
     filename,
-    path: '',
+    path: "",
     _input_dsn: data,
   }
 
