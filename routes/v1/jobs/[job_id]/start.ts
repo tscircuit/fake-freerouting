@@ -39,7 +39,7 @@ export default withRouteSpec({
   if (!job.input) {
     return ctx.json(
       { error: "Cannot start job without input file" },
-      { status: 400 }
+      { status: 400 },
     )
   }
 

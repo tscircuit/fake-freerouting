@@ -12,7 +12,7 @@ export default withRouteSpec({
   auth: "api_key",
 })((req, ctx) => {
   const sessionId = req.routeParams.session_id
-  
+
   // Verify session exists
   const session = ctx.db.sessions.find((s) => s.session_id === sessionId)
   if (!session) {

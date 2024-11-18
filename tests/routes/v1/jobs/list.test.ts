@@ -10,7 +10,11 @@ test("GET /v1/jobs/list/[session_id]", async () => {
   }
 
   // Create a session first
-  const createSessionRes = await axios.post("/v1/sessions/create", {}, { headers })
+  const createSessionRes = await axios.post(
+    "/v1/sessions/create",
+    {},
+    { headers },
+  )
   const sessionId = createSessionRes.data.id
 
   // Create a job

@@ -10,7 +10,11 @@ test("PUT /v1/jobs/[job_id]/start", async () => {
   }
 
   // Create a session first
-  const createSessionRes = await axios.post("/v1/sessions/create", {}, { headers })
+  const createSessionRes = await axios.post(
+    "/v1/sessions/create",
+    {},
+    { headers },
+  )
   const sessionId = createSessionRes.data.id
 
   // Create a job
@@ -31,7 +35,7 @@ test("PUT /v1/jobs/[job_id]/start", async () => {
     `/v1/jobs/${jobId}/input`,
     {
       filename: "test.dsn",
-      data: Buffer.from(exampleDsn).toString('base64'),
+      data: Buffer.from(exampleDsn).toString("base64"),
     },
     { headers },
   )
@@ -75,7 +79,11 @@ test("PUT /v1/jobs/[job_id]/start - no input file", async () => {
   }
 
   // Create a session first
-  const createSessionRes = await axios.post("/v1/sessions/create", {}, { headers })
+  const createSessionRes = await axios.post(
+    "/v1/sessions/create",
+    {},
+    { headers },
+  )
   const sessionId = createSessionRes.data.id
 
   // Create a job without input
@@ -91,11 +99,15 @@ test("PUT /v1/jobs/[job_id]/start - no input file", async () => {
   const jobId = createJobRes.data.id
 
   // Try to start job without input
-  const response = await axios.put(`/v1/jobs/${jobId}/start`, {}, { 
-    headers,
-    validateStatus: () => true // Don't throw on error status codes
-  })
-  
+  const response = await axios.put(
+    `/v1/jobs/${jobId}/start`,
+    {},
+    {
+      headers,
+      validateStatus: () => true, // Don't throw on error status codes
+    },
+  )
+
   expect(response.status).toBe(400)
   expect(response.data.error).toBe("Cannot start job without input file")
 })

@@ -12,7 +12,7 @@ export default withRouteSpec({
     java: z.string(),
     system_language: z.string(),
     cpu_cores: z.number(),
-    ram: z.number()
+    ram: z.number(),
   }),
 })((req, ctx) => {
   return ctx.json({
@@ -23,6 +23,6 @@ export default withRouteSpec({
     java: "21.0.5,Eclipse Adoptium",
     system_language: process.env.LANG || "en,en_US",
     cpu_cores: os.cpus().length,
-    ram: Math.round(os.totalmem() / (1024 * 1024)) // Convert to MB
+    ram: Math.round(os.totalmem() / (1024 * 1024)), // Convert to MB
   })
 })

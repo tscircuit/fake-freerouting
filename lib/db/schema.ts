@@ -31,7 +31,7 @@ export const jobOutputSchema = z.object({
   via_count: z.number().default(0),
   filename: z.string(),
   path: z.string().default(""),
-  data: z.string()
+  data: z.string(),
 })
 export type JobOutput = z.infer<typeof jobOutputSchema>
 
