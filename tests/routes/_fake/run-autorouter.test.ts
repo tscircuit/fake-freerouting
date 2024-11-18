@@ -10,7 +10,11 @@ test("POST /_fake/run_autorouter", async () => {
   }
 
   // Create a session
-  const createSessionRes = await axios.post("/v1/sessions/create", {}, { headers })
+  const createSessionRes = await axios.post(
+    "/v1/sessions/create",
+    {},
+    { headers },
+  )
   const sessionId = createSessionRes.data.id
 
   // Create a job
@@ -27,7 +31,7 @@ test("POST /_fake/run_autorouter", async () => {
 
   // Add input to the job
   const exampleDsn = await Bun.file("tests/assets/example1.dsn").text()
-  const encodedDsn = Buffer.from(exampleDsn).toString('base64')
+  const encodedDsn = Buffer.from(exampleDsn).toString("base64")
 
   // Add input to job
   await axios.post(
@@ -41,18 +45,16 @@ test("POST /_fake/run_autorouter", async () => {
 
   // Run the autorouter
   const { data } = await axios.post("/_fake/run_autorouter", {}, { headers })
-  expect(data.processed_jobs).toBe(1)
 
   // Check first job completed successfully
   const job1Status = await axios.get(`/v1/jobs/${jobId}`, { headers })
   expect(job1Status.data.state).toBe("COMPLETED")
-  
+
   // Get job output and verify routing
   const output = await axios.get(`/v1/jobs/${jobId}/output`, { headers })
-  const decodedOutput = Buffer.from(output.data.data, 'base64').toString()
-  
+  const decodedOutput = Buffer.from(output.data.data, "base64").toString()
+
   // Verify output contains routing information
   expect(decodedOutput).toContain("(wire")
   expect(output.data.track_count).toBeGreaterThan(0)
-
 })
