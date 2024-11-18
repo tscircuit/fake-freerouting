@@ -1,7 +1,7 @@
 {
   "name": "@tscircuit/fake-freerouting",
   "main": "dist/bundle.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
