@@ -48,6 +48,7 @@ export const jobInputSchema = z.object({
   via_count: z.number().default(0),
   filename: z.string(),
   path: z.string().default(""),
+  _input_dsn: z.string().optional(),
 })
 export type JobInput = z.infer<typeof jobInputSchema>
 

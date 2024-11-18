@@ -50,44 +50,39 @@ export default withRouteSpec({
       }
 
       // Get the input DSN content and add fake routing
-      // const inputDsn = Buffer.from(job.input.data, 'base64').toString() // No input data in job
-      const testCircuitJson = await Bun.file("tests/assets/circuit.json").json()
-      const simpleRouteJson = getSimpleRouteJson(testCircuitJson)
+      const inputDsn = Buffer.from(job.input._input_dsn!, 'base64').toString()
+      const circuitJson = parseDsnToCircuitJson(inputDsn)
+      const simpleRouteJson = getSimpleRouteJson(circuitJson)
 
       const autorouter = new MultilayerIjump({
         input: simpleRouteJson,
         OBSTACLE_MARGIN: 0.2
       })
       const traces = autorouter.solveAndMapToTraces() as PcbTrace[]
-      const routedCircuitJson = addPcbTracesToCircuitJson(testCircuitJson, traces)
+      const routedCircuitJson = addPcbTracesToCircuitJson(circuitJson, traces)
       const routedDsn = convertCircuitJsonToDsnString(routedCircuitJson)
+      // convert the DSN to a SES file
 
-      // Create output with routed DSN
-      const output = {
-        job_id: job.job_id,
-        data: Buffer.from(routedDsn).toString("base64"),
-        size: Buffer.from(routedDsn).length,
-        crc32: 0,
-        format: "SES",
-        layer_count: job.input?.layer_count ?? 2,
-        component_count: job.input?.component_count ?? 0,
-        netclass_count: job.input?.netclass_count ?? 0,
-        net_count: job.input?.net_count ?? 0,
-        track_count: 2, // Our fake routes
-        trace_count: 2,
-        via_count: 1,
-        filename: job.input.filename.replace(".dsn", ".ses"),
-        path: "",
-      }
-
-      // Update job with output and mark as completed
       ctx.db.jobs[jobIndex] = {
         ...ctx.db.jobs[jobIndex],
         state: "COMPLETED",
         stage: "IDLE",
-        output,
+        output: {
+          data: Buffer.from(routedDsn).toString("base64"),
+          size: Buffer.from(routedDsn).length,
+          crc32: 0,
+          format: "SES",
+          layer_count: job.input?.layer_count ?? 2,
+          component_count: job.input?.component_count ?? 0,
+          netclass_count: job.input?.netclass_count ?? 0,
+          net_count: job.input?.net_count ?? 0,
+          track_count: 2, // Our fake routes
+          trace_count: 2,
+          via_count: 1,
+          filename: job.input.filename.replace(".dsn", ".ses"),
+          path: "",
+        },
       }
-
 
       processedCount++
     } catch (error) {

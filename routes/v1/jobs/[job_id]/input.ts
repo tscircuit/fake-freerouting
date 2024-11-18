@@ -63,6 +63,7 @@ export default withRouteSpec({
     via_count: 0,
     filename,
     path: '',
+    _input_dsn: data,
   }
 
   // Update the job
