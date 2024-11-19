@@ -1,6 +1,9 @@
 {
   "name": "@tscircuit/fake-freerouting",
   "main": "dist/bundle.js",
+  "files": [
+    "dist"
+  ],
   "version": "0.0.2",
   "type": "module",
   "devDependencies": {
