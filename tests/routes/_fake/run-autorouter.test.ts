@@ -51,6 +51,8 @@ test("POST /_fake/run_autorouter", async () => {
     { headers },
   )
 
+  await axios.put(`/v1/jobs/${jobId}/start`, {}, { headers })
+
   // Run the autorouter
   const { data } = await axios.post("/_fake/run_autorouter", {}, { headers })
 
