@@ -68,7 +68,7 @@ export const jobSchema = z.object({
   output: jobOutputSchema.optional(),
   session_id: z.string(),
   name: z.string(),
-  state: z.enum(["QUEUED", "RUNNING", "COMPLETED", "FAILED"]),
+  state: z.enum(["QUEUED", "RUNNING", "COMPLETED", "FAILED", "READY_TO_START"]),
   priority: z.enum(["LOW", "NORMAL", "HIGH"]),
   stage: z.enum(["IDLE", "ROUTING"]),
   router_settings: routerSettingsSchema,

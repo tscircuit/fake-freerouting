@@ -50,7 +50,7 @@ test("PUT /v1/jobs/[job_id]/start", async () => {
     input: expect.any(Object),
     session_id: sessionId,
     name: "test-job",
-    state: "RUNNING",
+    state: "READY_TO_START",
     priority: "NORMAL",
     stage: "ROUTING",
     router_settings: expect.any(Object),

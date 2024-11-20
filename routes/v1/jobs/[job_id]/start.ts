@@ -17,7 +17,13 @@ export default withRouteSpec({
       input: jobInputSchema.optional(),
       session_id: z.string(),
       name: z.string(),
-      state: z.enum(["QUEUED", "RUNNING", "COMPLETED", "FAILED"]),
+      state: z.enum([
+        "QUEUED",
+        "RUNNING",
+        "COMPLETED",
+        "FAILED",
+        "READY_TO_START",
+      ]),
       priority: z.enum(["LOW", "NORMAL", "HIGH"]),
       stage: z.enum(["IDLE", "ROUTING"]),
       router_settings: routerSettingsSchema,
@@ -47,7 +53,7 @@ export default withRouteSpec({
   const jobIndex = ctx.db.jobs.findIndex((j) => j.job_id === jobId)
   const updatedJob = {
     ...job,
-    state: "RUNNING" as const,
+    state: "READY_TO_START" as const,
     stage: "ROUTING" as const,
     started_at: new Date().toISOString(),
   }
