@@ -2,7 +2,7 @@ import { withRouteSpec } from "lib/middleware/with-winter-spec"
 import { z } from "zod"
 import { withApiKeyAuth } from "lib/middleware/with-api-key-auth"
 import { NotFoundError } from "winterspec/middleware"
-import { routerSettingsSchema } from "lib/db/schema"
+import { jobStateSchema, routerSettingsSchema } from "lib/db/schema"
 
 export default withRouteSpec({
   methods: ["POST"],
@@ -35,7 +35,7 @@ export default withRouteSpec({
       .optional(),
     session_id: z.string(),
     name: z.string(),
-    state: z.enum(["QUEUED", "RUNNING", "COMPLETED", "FAILED"]),
+    state: jobStateSchema,
     priority: z.enum(["LOW", "NORMAL", "HIGH"]),
     stage: z.enum(["IDLE", "ROUTING"]),
     router_settings: routerSettingsSchema,
