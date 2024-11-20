@@ -1,7 +1,7 @@
 import { withRouteSpec } from "lib/middleware/with-winter-spec"
 import { z } from "zod"
 import { randomUUID } from "node:crypto"
-import { routerSettingsSchema } from "lib/db/schema"
+import { jobStateSchema, routerSettingsSchema } from "lib/db/schema"
 import { withApiKeyAuth } from "lib/middleware/with-api-key-auth"
 
 export default withRouteSpec({
@@ -17,7 +17,7 @@ export default withRouteSpec({
     created_at: z.string(),
     session_id: z.string(),
     name: z.string(),
-    state: z.enum(["QUEUED", "RUNNING", "COMPLETED", "FAILED"]),
+    state: jobStateSchema,
     priority: z.enum(["LOW", "NORMAL", "HIGH"]),
     stage: z.enum(["IDLE", "ROUTING"]),
     router_settings: routerSettingsSchema,
@@ -49,7 +49,12 @@ export default withRouteSpec({
     created_at: job.created_at,
     session_id: job.session_id,
     name: job.name,
-    state: job.state as "QUEUED" | "RUNNING" | "COMPLETED" | "FAILED",
+    state: job.state as
+      | "QUEUED"
+      | "RUNNING"
+      | "COMPLETED"
+      | "FAILED"
+      | "READY_TO_START",
     priority: job.priority,
     stage: job.stage as "IDLE" | "ROUTING",
     router_settings: job.router_settings,
