@@ -39,7 +39,7 @@ export default withRouteSpec({
 
   // Find jobs that need processing
   const jobsToProcess = ctx.db.jobs.filter((job) =>
-    ["QUEUED"].includes(job.state),
+    ["QUEUED", "READY_TO_START"].includes(job.state),
   )
 
   for (const job of jobsToProcess) {
