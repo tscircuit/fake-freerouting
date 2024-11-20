@@ -10,6 +10,9 @@ export default withRouteSpec({
     host: z.string(),
   }),
 })((req, ctx) => {
+  // TODO check the body, this endpoint sends a 502 bad gateway
+  // if you don't provide an empty string in the body
+
   const session = {
     session_id: randomUUID(),
     user_id: req.headers.get("Freerouting-Profile-ID") ?? randomUUID(),
