@@ -1,19 +1,23 @@
-import { withRouteSpec } from "lib/middleware/with-winter-spec"
-import { z } from "zod"
-import {
-  parseDsnToCircuitJson,
-  convertCircuitJsonToDsnString,
-  convertCircuitJsonToDsnSession,
-  parseDsnToDsnJson,
-  type DsnPcb,
-  stringifyDsnSession,
-} from "dsn-converter"
-import type { AnyCircuitElement, PcbTrace } from "circuit-json"
 import {
   MultilayerIjump,
   getSimpleRouteJson,
 } from "@tscircuit/infgrid-ijump-astar"
-import { su } from "@tscircuit/soup-util"
+import type { AnyCircuitElement, PcbTrace } from "circuit-json"
+import Debug from "debug"
+import {
+  type DsnPcb,
+  convertCircuitJsonToDsnSession,
+  parseDsnToCircuitJson,
+  parseDsnToDsnJson,
+  stringifyDsnSession,
+} from "dsn-converter"
+import { withRouteSpec } from "lib/middleware/with-winter-spec"
+import { circuitJsonToMarkdownTable } from "tests/debug-utils/circuit-json-to-table"
+import { analyzeWirePaths } from "tests/debug-utils/extract-trace-from-ses-file"
+import { saveRouteAnalysis } from "tests/debug-utils/simple-route-json-to-table"
+import { z } from "zod"
+
+const debugGraphics = Debug("tscircuit:fake-autorouter")
 
 function addPcbTracesToCircuitJson(
   circuitJson: AnyCircuitElement[],
@@ -69,7 +73,24 @@ export default withRouteSpec({
       const inputDsn = Buffer.from(job.input._input_dsn!, "base64").toString()
       const dsnPcb = parseDsnToDsnJson(inputDsn) as DsnPcb
       const circuitJson = parseDsnToCircuitJson(inputDsn)
+
+      if (debugGraphics.enabled) {
+        circuitJsonToMarkdownTable(
+          circuitJson as any,
+          "../routes/_fake/debug-files-stages/stage-1-circuit-json.md",
+          "Stage 1: Circuit JSON as input to fake",
+        )
+      }
+
       const simpleRouteJson = getSimpleRouteJson(circuitJson)
+
+      if (debugGraphics.enabled) {
+        saveRouteAnalysis(
+          simpleRouteJson,
+          "../routes/_fake/debug-files-stages/stage-2-simple-route-json.md",
+          "Stage 2: Simple Route JSON as input to autorouter",
+        )
+      }
 
       const autorouter = new MultilayerIjump({
         input: simpleRouteJson,
@@ -82,6 +103,15 @@ export default withRouteSpec({
         trace.source_trace_id = trace.pcb_trace_id.split("pcb_trace_for_")[1]
       }
       const routedCircuitJson = addPcbTracesToCircuitJson(circuitJson, traces)
+
+      if (debugGraphics.enabled) {
+        circuitJsonToMarkdownTable(
+          routedCircuitJson as any,
+          "../routes/_fake/debug-files-stages/stage-3-routed-circuit-json.md",
+          "Stage 3: Routed Circuit JSON as output from the fake autorouter",
+        )
+        // saveRouteAnalysis(traces, "routed-trace-points.md")
+      }
 
       // console.dir(
       //   {
@@ -99,6 +129,16 @@ export default withRouteSpec({
       )
 
       const routedDsnString = stringifyDsnSession(routedDsnSession)
+      if (debugGraphics.enabled) {
+        debugGraphics({
+          routedDsnString,
+        })
+        analyzeWirePaths(
+          routedDsnString,
+          "../routes/_fake/debug-files-stages/stage-4-ses-file-trace-points.md",
+          "Last stage: SES file conversion from routed circuit JSON",
+        )
+      }
       // convert the DSN to a SES file
 
       ctx.db.jobs[jobIndex] = {
