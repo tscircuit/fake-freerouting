@@ -102,10 +102,7 @@ export default withRouteSpec({
         // HACK: autorouter should be able to return the source trace id
         trace.source_trace_id = trace.pcb_trace_id.split("pcb_trace_for_")[1]
       }
-      const routedCircuitJson = addPcbTracesToCircuitJson(
-        circuitJson,
-        traces,
-      )
+      const routedCircuitJson = addPcbTracesToCircuitJson(circuitJson, traces)
 
       if (debugGraphics.enabled) {
         circuitJsonToMarkdownTable(
