@@ -9,7 +9,7 @@ import {
   convertCircuitJsonToDsnSession,
   parseDsnToCircuitJson,
   parseDsnToDsnJson,
-  stringifyDsnSession
+  stringifyDsnSession,
 } from "dsn-converter"
 import { withRouteSpec } from "lib/middleware/with-winter-spec"
 import { circuitJsonToMarkdownTable } from "tests/debug-utils/circuit-json-to-table"
@@ -76,7 +76,7 @@ export default withRouteSpec({
 
       if (debugGraphics.enabled) {
         circuitJsonToMarkdownTable(
-          circuitJson,
+          circuitJson as any,
           "../routes/_fake/debug-files-stages/stage-1-circuit-json.md",
           "Stage 1: Circuit JSON as input to fake",
         )
@@ -102,11 +102,14 @@ export default withRouteSpec({
         // HACK: autorouter should be able to return the source trace id
         trace.source_trace_id = trace.pcb_trace_id.split("pcb_trace_for_")[1]
       }
-      const routedCircuitJson = addPcbTracesToCircuitJson(circuitJson, traces)
+      const routedCircuitJson = addPcbTracesToCircuitJson(
+        circuitJson,
+        traces,
+      )
 
       if (debugGraphics.enabled) {
         circuitJsonToMarkdownTable(
-          routedCircuitJson,
+          routedCircuitJson as any,
           "../routes/_fake/debug-files-stages/stage-3-routed-circuit-json.md",
           "Stage 3: Routed Circuit JSON as output from the fake autorouter",
         )
