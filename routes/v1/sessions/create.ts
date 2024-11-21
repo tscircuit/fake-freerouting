@@ -9,9 +9,13 @@ export default withRouteSpec({
     user_id: z.string(),
     host: z.string(),
   }),
+  jsonBody: z.object({
+    body: z.string().optional(),
+  }),
 })((req, ctx) => {
-  // TODO check the body, this endpoint sends a 502 bad gateway
-  // if you don't provide an empty string in the body
+  if (req.jsonBody.body !== "") {
+    return ctx.json({ id: "", user_id: "", host: "" }, { status: 502 })
+  }
 
   const session = {
     session_id: randomUUID(),
