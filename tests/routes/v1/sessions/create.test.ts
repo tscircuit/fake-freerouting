@@ -9,9 +9,13 @@ test("POST /v1/sessions/create", async () => {
     "Freerouting-Environment-Host": "test-host",
   }
 
-  const { data } = await axios.post("/v1/sessions/create", {
-    body: "",
-  }, { headers })
+  const { data } = await axios.post(
+    "/v1/sessions/create",
+    {
+      body: "",
+    },
+    { headers },
+  )
 
   expect(data).toMatchObject({
     id: expect.any(String),
@@ -34,7 +38,7 @@ test("POST /v1/sessions/create with non-empty body returns 502", async () => {
     {
       headers,
       validateStatus: () => true,
-    }
+    },
   )
 
   expect(response.status).toBe(502)
