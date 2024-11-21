@@ -13,7 +13,7 @@ test.skip("GET /v1/jobs/[job_id]/output", async () => {
   // Create a session first
   const createSessionRes = await axios.post(
     "/v1/sessions/create",
-    { body: "" },
+    {},
     { headers },
   )
   const sessionId = createSessionRes.data.id

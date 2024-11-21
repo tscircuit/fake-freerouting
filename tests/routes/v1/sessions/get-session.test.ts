@@ -10,11 +10,7 @@ test("GET /v1/sessions/[session_id]", async () => {
   }
 
   // Create a session first
-  const createRes = await axios.post(
-    "/v1/sessions/create",
-    { body: "" },
-    { headers },
-  )
+  const createRes = await axios.post("/v1/sessions/create", {}, { headers })
   const sessionId = createRes.data.id
 
   // Get specific session
