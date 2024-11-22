@@ -21,7 +21,7 @@ test("POST /_fake/run_autorouter", async () => {
   // Create a session
   const createSessionRes = await axios.post(
     "/v1/sessions/create",
-    {},
+    { body: "" },
     { headers },
   )
   const sessionId = createSessionRes.data.id

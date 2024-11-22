@@ -12,7 +12,7 @@ test("POST /v1/jobs/[job_id]/settings", async () => {
   // Create a session first
   const createSessionRes = await axios.post(
     "/v1/sessions/create",
-    {},
+    { body: "" },
     { headers },
   )
   const sessionId = createSessionRes.data.id

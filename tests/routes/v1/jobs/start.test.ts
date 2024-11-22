@@ -12,7 +12,7 @@ test("PUT /v1/jobs/[job_id]/start", async () => {
   // Create a session first
   const createSessionRes = await axios.post(
     "/v1/sessions/create",
-    {},
+    { body: "" },
     { headers },
   )
   const sessionId = createSessionRes.data.id
@@ -81,7 +81,7 @@ test("PUT /v1/jobs/[job_id]/start - no input file", async () => {
   // Create a session first
   const createSessionRes = await axios.post(
     "/v1/sessions/create",
-    {},
+    { body: "" },
     { headers },
   )
   const sessionId = createSessionRes.data.id
