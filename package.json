@@ -26,7 +26,7 @@
     "@tscircuit/soup-util": "^0.0.38",
     "bun-match-svg": "^0.0.6",
     "circuit-to-svg": "^0.0.81",
-    "dsn-converter": "^0.0.18",
+    "dsn-converter": "^0.0.23",
     "graphics-debug": "^0.0.1",
     "kleur": "^4.1.5",
     "schematic-symbols": "0.0.99",
