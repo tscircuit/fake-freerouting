@@ -41,9 +41,9 @@ export default withRouteSpec({
   const errors: Array<{ job_id: string; error: string }> = []
   let processedCount = 0
 
-  // Find jobs that need processing
-  const jobsToProcess = ctx.db.jobs.filter((job) =>
-    ["READY_TO_START"].includes(job.state),
+  // Find jobs that have been started and are ready for processing
+  const jobsToProcess = ctx.db.jobs.filter(
+    (job) => job.state === "READY_TO_START" && job.started_at,
   )
 
   for (const job of jobsToProcess) {
