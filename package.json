@@ -18,7 +18,8 @@
     "redaxios": "^0.5.1"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "dsn-converter": "^0.0.41"
   },
   "dependencies": {
     "@tscircuit/infgrid-ijump-astar": "^0.0.24",
@@ -26,7 +27,6 @@
     "@tscircuit/soup-util": "^0.0.38",
     "bun-match-svg": "^0.0.6",
     "circuit-to-svg": "^0.0.81",
-    "dsn-converter": "^0.0.23",
     "graphics-debug": "^0.0.1",
     "kleur": "^4.1.5",
     "schematic-symbols": "0.0.99",
