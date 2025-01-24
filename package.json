@@ -22,7 +22,7 @@
     "dsn-converter": "^0.0.41"
   },
   "dependencies": {
-    "@tscircuit/infgrid-ijump-astar": "^0.0.24",
+    "@tscircuit/infgrid-ijump-astar": "^0.0.34",
     "@tscircuit/soup": "^0.0.73",
     "@tscircuit/soup-util": "^0.0.38",
     "bun-match-svg": "^0.0.6",
