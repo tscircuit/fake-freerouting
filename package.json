@@ -19,7 +19,7 @@
   },
   "peerDependencies": {
     "typescript": "^5.0.0",
-    "dsn-converter": "^0.0.57"
+    "dsn-converter": "^0.0.59"
   },
   "dependencies": {
     "@tscircuit/infgrid-ijump-astar": "^0.0.34",
