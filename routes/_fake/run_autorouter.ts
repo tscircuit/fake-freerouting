@@ -12,6 +12,7 @@ import {
   stringifyDsnSession,
 } from "dsn-converter"
 import { withRouteSpec } from "lib/middleware/with-winter-spec"
+import { filterCircuitJsonForTraceHavingMultiplePortIds } from "lib/utils/filter-circuit-json-for-trace-having-multiple-port-ids"
 import { circuitJsonToMarkdownTable } from "tests/debug-utils/circuit-json-to-table"
 import { analyzeWirePaths } from "tests/debug-utils/extract-trace-from-ses-file"
 import { saveRouteAnalysis } from "tests/debug-utils/simple-route-json-to-table"
@@ -73,6 +74,8 @@ export default withRouteSpec({
       const inputDsn = Buffer.from(job.input._input_dsn!, "base64").toString()
       const dsnPcb = parseDsnToDsnJson(inputDsn) as DsnPcb
       const circuitJson = parseDsnToCircuitJson(inputDsn)
+
+      filterCircuitJsonForTraceHavingMultiplePortIds(circuitJson)
 
       if (debugGraphics.enabled) {
         circuitJsonToMarkdownTable(
